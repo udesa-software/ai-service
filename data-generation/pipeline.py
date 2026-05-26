@@ -14,6 +14,7 @@ las bios ya generadas en la BD y las saltea automáticamente.
 
 import argparse
 import asyncio
+import sqlite3
 import sys
 import time
 from pathlib import Path
@@ -55,7 +56,7 @@ async def generate_batch(
 
     async def process_one(persona: Persona):
         async with semaphore:
-            # Idempotencia: saltar si ya existe
+            # Idempotencia: saltar si ya existe en la BD
             if db.username_exists(persona.username):
                 stats["skipped"] += 1
                 pbar.update(1)
@@ -66,8 +67,13 @@ async def generate_batch(
             if bio is None:
                 stats["failed"] += 1
             else:
-                db.save(persona, bio, model, attempts)
-                stats["saved"] += 1
+                try:
+                    db.save(persona, bio, model, attempts)
+                    stats["saved"] += 1
+                except sqlite3.IntegrityError:
+                    # Otra tarea concurrente ya guardó este username mientras
+                    # esperábamos la respuesta del LLM. No es un error: saltear.
+                    stats["skipped"] += 1
 
             pbar.update(1)
             pbar.set_postfix(

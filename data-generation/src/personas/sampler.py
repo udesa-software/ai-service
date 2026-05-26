@@ -7,6 +7,7 @@ antes de muestrear aleatoriamente el resto de los atributos.
 
 import random
 import json
+import unicodedata
 from dataclasses import dataclass, asdict
 from typing import List
 
@@ -23,6 +24,23 @@ from .taxonomy import (
 )
 
 fake = Faker("es_AR")
+
+
+def _normalize_username(raw: str) -> str:
+    """
+    Convierte una cadena cruda en un username válido para el microservicio users:
+    - Solo caracteres alfanuméricos (sin espacios, guiones, diéresis, apóstrofes, etc.)
+    - Máximo 15 caracteres
+    - Minúsculas
+
+    Estrategia: descompone Unicode (NFD) para separar los caracteres base de sus
+    diacríticos (e.g. é → e + combining accent), descarta todo lo que no sea ASCII
+    y luego filtra para quedarse solo con alfanuméricos.
+    """
+    nfd = unicodedata.normalize("NFD", raw)
+    ascii_only = nfd.encode("ascii", "ignore").decode("ascii")
+    alnum = "".join(c for c in ascii_only if c.isalnum())
+    return alnum.lower()[:15]
 
 
 @dataclass
@@ -76,17 +94,7 @@ def _make_persona(
     first = fake.first_name()
     last = fake.last_name()
     name = f"{first} {last}"
-    username = (
-        f"{first.lower()}{last.lower()}{random.randint(10, 99)}"
-        .replace(" ", "")
-        .replace("á", "a")
-        .replace("é", "e")
-        .replace("í", "i")
-        .replace("ó", "o")
-        .replace("ú", "u")
-        .replace("ñ", "n")
-        [:15]  # max 15 chars según H1.CA.3
-    )
+    username = _normalize_username(f"{first}{last}{random.randint(10, 99)}")
     email = fake.email()
 
     n_interests = random.randint(2, 4)
