@@ -10,6 +10,7 @@ from src.middlewares.error_handler import (
     app_error_handler,
     missing_biography_handler,
 )
+from langfuse import get_client
 from src.modules.recommendations.recommendations_router import router
 
 
@@ -19,6 +20,9 @@ async def lifespan(_app: FastAPI):
     await init_http_client()
     yield
     await close_http_client()
+    get_client().flush()
+
+
 
 
 app = FastAPI(title="UdeSA-Migos AI Service", lifespan=lifespan)
