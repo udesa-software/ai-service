@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ai-service-config
+  namespace: tds-group-3
+data:
+  PORT: "8001"
+  EMBEDDINGS_DB_PATH: "/app/data/embeddings.db"
+  USERS_INTERNAL_URL: "http://users:3000"
+  FRIENDS_INTERNAL_URL: "http://friends:3000"
