@@ -26,6 +26,12 @@ class RecommendationsService:
         return vector
 
     @observe()
+    def update_biography_embedding(self, user_id: str, biography: str) -> None:
+        if biography and biography.strip():
+            vector = self.model.encode(biography)
+            self.cache.save(user_id, biography, vector)
+
+    @observe()
     async def get_recommendations(self, requester_id: str) -> list[dict]:
         propagate_attributes(user_id=requester_id)
         biography = await self.repository.get_user_biography(requester_id)
@@ -37,7 +43,7 @@ class RecommendationsService:
         if not candidates:
             return []
 
-        requester_vector = self.model.encode(biography)
+        requester_vector = self._get_or_compute_embedding(requester_id, biography)
 
         candidate_vectors = np.array(
             [self._get_or_compute_embedding(c["id"], c["biography"]) for c in candidates]
