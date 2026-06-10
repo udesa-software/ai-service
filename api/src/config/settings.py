@@ -12,7 +12,8 @@ class Settings(BaseSettings):
     internal_secret: str
 
     embeddings_db_path: str = "/app/data/embeddings.db"
-    embedding_model: str = "paraphrase-multilingual-mpnet-base-v2"
+    embedding_model: str = "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
+    hf_api_token: str
 
 
 settings = Settings()

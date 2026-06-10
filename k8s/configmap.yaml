@@ -6,5 +6,6 @@ metadata:
 data:
   PORT: "8001"
   EMBEDDINGS_DB_PATH: "/app/data/embeddings.db"
+  EMBEDDING_MODEL: "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
   USERS_INTERNAL_URL: "http://users:3000"
   FRIENDS_INTERNAL_URL: "http://friends:3000"

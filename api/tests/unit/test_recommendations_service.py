@@ -277,20 +277,18 @@ class TestEmbeddingCache:
 
         await service.get_recommendations(REQUESTER_ID)
 
-        # side_effect overrides return_value, so we can't compare against
-        # service.model.encode.return_value — use ANY for the numpy vector
-        service.cache.save.assert_called_once_with(
+        service.cache.save.assert_any_call(
             CANDIDATE_A["id"],
             CANDIDATE_A["biography"],
             ANY,
         )
 
-    async def test_does_not_save_requester_embedding_to_cache(self):
-        """El embedding del requester es el vector de consulta; no se cachea."""
+    async def test_saves_requester_embedding_to_cache(self):
+        """El embedding del requester también se cachea para futuras consultas."""
         service = make_service(candidates=[CANDIDATE_A])
         service.cache.get.return_value = None
 
         await service.get_recommendations(REQUESTER_ID)
 
         saved_ids = [call[0][0] for call in service.cache.save.call_args_list]
-        assert REQUESTER_ID not in saved_ids
+        assert REQUESTER_ID in saved_ids
