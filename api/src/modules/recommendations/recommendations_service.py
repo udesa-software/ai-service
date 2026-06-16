@@ -5,6 +5,8 @@ from src.embeddings.store import embedding_store
 from src.middlewares.error_handler import MissingBiographyError
 from src.modules.recommendations.recommendations_repository import recommendations_repository
 
+from langfuse import observe, propagate_attributes
+
 TOP_N = 10
 
 
@@ -14,6 +16,7 @@ class RecommendationsService:
         self.model = model
         self.cache = cache
 
+    @observe()
     def _get_or_compute_embedding(self, user_id: str, biography: str) -> np.ndarray:
         cached = self.cache.get(user_id, biography)
         if cached is not None:
@@ -22,7 +25,9 @@ class RecommendationsService:
         self.cache.save(user_id, biography, vector)
         return vector
 
+    @observe()
     async def get_recommendations(self, requester_id: str) -> list[dict]:
+        propagate_attributes(user_id=requester_id)
         biography = await self.repository.get_user_biography(requester_id)
         if not biography or not biography.strip():
             raise MissingBiographyError()

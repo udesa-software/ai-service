@@ -2,6 +2,7 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 
 from src.config.settings import settings
+from langfuse import observe
 
 _model: SentenceTransformer | None = None
 
@@ -14,6 +15,7 @@ def _get_model() -> SentenceTransformer:
 
 
 class EmbeddingModel:
+    @observe(as_type="generation")
     def encode(self, text: str) -> np.ndarray:
         return _get_model().encode(text, normalize_embeddings=True)
 
