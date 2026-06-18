@@ -1,6 +1,6 @@
 fastapi>=0.111
 uvicorn[standard]>=0.29
-sentence-transformers>=3.0
+huggingface_hub>=0.26
 PyJWT>=2.8
 pydantic-settings>=2.0
 numpy>=1.26
