@@ -15,5 +15,11 @@ class Settings(BaseSettings):
     embedding_model: str = "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
     hf_api_token: str
 
+    users_db_host: str
+    users_db_port: int = 5432
+    users_db_name: str = "postgres"
+    users_db_user: str
+    users_db_password: str
+
 
 settings = Settings()

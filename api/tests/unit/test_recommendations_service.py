@@ -34,6 +34,7 @@ def make_service(
     excluded_ids=None,
     candidates=None,
     cached_embeddings=None,
+    vector_candidates=None,
 ) -> RecommendationsService:
     """Build a RecommendationsService with fully controlled mock dependencies."""
     repository = MagicMock()
@@ -52,6 +53,7 @@ def make_service(
     cache = MagicMock()
     cache.get.side_effect = lambda user_id, bio: cached_embeddings.get(user_id)
     cache.save.return_value = None
+    cache.find_nearest_candidates.return_value = vector_candidates or []
 
     return RecommendationsService(repository=repository, model=model, cache=cache)
 
@@ -109,10 +111,11 @@ class TestNoCandidates:
         result = await service.get_recommendations(REQUESTER_ID)
         assert result == []
 
-    async def test_does_not_call_model_when_no_candidates(self):
+    async def test_only_computes_requester_embedding_when_no_candidates(self):
         service = make_service(candidates=[])
         await service.get_recommendations(REQUESTER_ID)
-        service.model.encode.assert_not_called()
+        encode_calls = [call[0][0] for call in service.model.encode.call_args_list]
+        assert encode_calls == [BIOGRAPHY_REQUESTER]
 
 
 # ─── Consultas al repositorio ─────────────────────────────────────────────────
@@ -170,6 +173,23 @@ class TestResponseFormat:
         returned_ids = {item["id"] for item in result}
         expected_ids = {CANDIDATE_A["id"], CANDIDATE_B["id"]}
         assert returned_ids == expected_ids
+
+
+# ─── Búsqueda vectorial ───────────────────────────────────────────────────────
+
+class TestVectorSearch:
+    async def test_uses_vector_candidates_without_fetching_all_candidates(self):
+        service = make_service(vector_candidates=[CANDIDATE_C])
+
+        result = await service.get_recommendations(REQUESTER_ID)
+
+        assert result == [CANDIDATE_C]
+        service.repository.get_all_candidates.assert_not_called()
+        service.cache.find_nearest_candidates.assert_called_once_with(
+            ANY,
+            {REQUESTER_ID},
+            10,
+        )
 
 
 # ─── Ordenamiento por similitud ───────────────────────────────────────────────

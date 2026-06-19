@@ -1,9 +1,11 @@
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
 from src.config.http_client import close_http_client, init_http_client
 from src.embeddings.model import embedding_model
+from src.embeddings.store import embedding_store
 from src.middlewares.error_handler import (
     AppError,
     MissingBiographyError,
@@ -13,13 +15,20 @@ from src.middlewares.error_handler import (
 from langfuse import get_client
 from src.modules.recommendations.recommendations_router import router
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+)
+
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     embedding_model.warmup()
+    embedding_store.open()
     await init_http_client()
     yield
     await close_http_client()
+    embedding_store.close()
     get_client().flush()
 
 
