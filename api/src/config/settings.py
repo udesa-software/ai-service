@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     users_db_name: str = "postgres"
     users_db_user: str
     users_db_password: str
+    users_db_ssl: bool = True
 
 
 settings = Settings()

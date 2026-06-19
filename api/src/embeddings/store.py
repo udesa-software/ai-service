@@ -28,6 +28,7 @@ def _deserialize(val: str) -> np.ndarray:
 
 class EmbeddingStore:
     def __init__(self):
+        sslmode = "require" if settings.users_db_ssl else "disable"
         self._pool = ConnectionPool(
             kwargs={
                 "host": settings.users_db_host,
@@ -36,6 +37,7 @@ class EmbeddingStore:
                 "user": settings.users_db_user,
                 "password": settings.users_db_password,
                 "connect_timeout": 10,
+                "sslmode": sslmode,
             },
             min_size=1,
             max_size=5,
