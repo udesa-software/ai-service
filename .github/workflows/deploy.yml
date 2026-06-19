@@ -40,6 +40,14 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           INTERNAL_SECRET: ${{ secrets.INTERNAL_SECRET }}
           HF_API_TOKEN: ${{ secrets.HF_API_TOKEN }}
+          LANGFUSE_HOST: ${{ secrets.LANGFUSE_HOST }}
+          LANGFUSE_PUBLIC_KEY: ${{ secrets.LANGFUSE_PUBLIC_KEY }}
+          LANGFUSE_SECRET_KEY: ${{ secrets.LANGFUSE_SECRET_KEY }}
+          USERS_DB_HOST: ${{ secrets.USERS_DB_HOST }}
+          USERS_DB_PORT: ${{ secrets.USERS_DB_PORT }}
+          USERS_DB_NAME: ${{ secrets.USERS_DB_NAME }}
+          USERS_DB_USER: ${{ secrets.USERS_DB_USER }}
+          USERS_DB_PASSWORD: ${{ secrets.USERS_DB_PASSWORD }}
         run: |
           envsubst < k8s/secret.template.yaml > k8s/secret.yaml
       - name: Apply Kubernetes manifests

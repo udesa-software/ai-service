@@ -37,6 +37,51 @@ spec:
                 secretKeyRef:
                   name: ai-service-secret
                   key: INTERNAL_SECRET
+            - name: HF_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: ai-service-secret
+                  key: HF_API_TOKEN
+            - name: LANGFUSE_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: ai-service-secret
+                  key: LANGFUSE_HOST
+            - name: LANGFUSE_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ai-service-secret
+                  key: LANGFUSE_PUBLIC_KEY
+            - name: LANGFUSE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ai-service-secret
+                  key: LANGFUSE_SECRET_KEY
+            - name: USERS_DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: ai-service-secret
+                  key: USERS_DB_HOST
+            - name: USERS_DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: ai-service-secret
+                  key: USERS_DB_PORT
+            - name: USERS_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: ai-service-secret
+                  key: USERS_DB_NAME
+            - name: USERS_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: ai-service-secret
+                  key: USERS_DB_USER
+            - name: USERS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ai-service-secret
+                  key: USERS_DB_PASSWORD
           livenessProbe:
             httpGet:
               path: /health
