@@ -24,3 +24,31 @@ ai-service/
 ## Setup rápido (data-generation)
 
 Ver [data-generation/README.md](data-generation/README.md).
+
+## Setup rápido (api)
+
+El servicio `api` es Python. Usar un virtualenv propio del repo evita mezclar dependencias con otros servicios.
+
+```bash
+cd ai-service/api
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Para correr tests:
+
+```bash
+pytest
+pytest tests/integration
+pytest --cov=src --cov-report=xml
+```
+
+Si el prompt muestra un `.venv` de otro repo, por ejemplo `notifications/.venv`, desactivalo antes:
+
+```bash
+deactivate
+cd ai-service/api
+source .venv/bin/activate
+pytest
+```
