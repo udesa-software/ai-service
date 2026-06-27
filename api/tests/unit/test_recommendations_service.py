@@ -14,16 +14,19 @@ CANDIDATE_A = {
     "id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
     "username": "alice",
     "biography": "Estudiante de Ingeniería apasionada por la robótica y el código.",
+    "profile_photo_url": "https://example.com/alice.jpg",
 }
 CANDIDATE_B = {
     "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
     "username": "bob",
     "biography": "Me gusta el cine independiente y la filosofía continental.",
+    "profile_photo_url": "https://example.com/bob.jpg",
 }
 CANDIDATE_C = {
     "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
     "username": "carol",
     "biography": "Apasionada por la IA y el machine learning en español.",
+    "profile_photo_url": "https://example.com/carol.jpg",
 }
 
 BIOGRAPHY_REQUESTER = "Hago investigación en NLP y me interesa la IA aplicada."
@@ -160,12 +163,13 @@ class TestResponseFormat:
             assert "id" in item
             assert "username" in item
             assert "biography" in item
+            assert "profile_photo_url" in item
 
-    async def test_each_result_has_exactly_three_fields(self):
+    async def test_each_result_has_exactly_four_fields(self):
         service = make_service()
         result = await service.get_recommendations(REQUESTER_ID)
         for item in result:
-            assert set(item.keys()) == {"id", "username", "biography"}
+            assert set(item.keys()) == {"id", "username", "biography", "profile_photo_url"}
 
     async def test_ids_come_from_candidates(self):
         service = make_service(candidates=[CANDIDATE_A, CANDIDATE_B])
@@ -202,8 +206,18 @@ class TestSimilarityRanking:
         bio_similar = "Investigo machine learning y procesamiento de lenguaje natural."
         bio_different = "Me encanta el surf y los deportes acuáticos en la playa."
 
-        close_candidate = {"id": "eeee-1", "username": "near", "biography": bio_similar}
-        far_candidate = {"id": "ffff-2", "username": "far", "biography": bio_different}
+        close_candidate = {
+            "id": "eeee-1",
+            "username": "near",
+            "biography": bio_similar,
+            "profile_photo_url": "https://example.com/near.jpg",
+        }
+        far_candidate = {
+            "id": "ffff-2",
+            "username": "far",
+            "biography": bio_different,
+            "profile_photo_url": "https://example.com/far.jpg",
+        }
 
         # Usamos vectores controlados: el close_candidate tiene alta similitud
         v_requester = np.array([1.0, 0.0, 0.0], dtype=np.float32)
@@ -245,7 +259,12 @@ class TestTopNLimit:
     async def test_returns_at_most_top_n_candidates(self):
         """Nunca devuelve más de TOP_N (10) resultados."""
         many_candidates = [
-            {"id": f"id-{i}", "username": f"user{i}", "biography": f"Bio número {i}"}
+            {
+                "id": f"id-{i}",
+                "username": f"user{i}",
+                "biography": f"Bio número {i}",
+                "profile_photo_url": f"https://example.com/user{i}.jpg",
+            }
             for i in range(25)
         ]
         service = make_service(candidates=many_candidates)
