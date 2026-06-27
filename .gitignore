@@ -32,3 +32,6 @@ models/
 # Logs
 *.log
 logs/
+
+api/.coverage
+api/coverage*
