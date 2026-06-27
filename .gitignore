@@ -36,3 +36,5 @@ logs/
 
 coverage.*
 .coverage
+api/.coverage
+api/coverage*
