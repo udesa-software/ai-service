@@ -121,6 +121,7 @@ class RecommendationsService:
                 "id": candidates[i]["id"],
                 "username": candidates[i]["username"],
                 "biography": candidates[i]["biography"],
+                "profile_photo_url": candidates[i].get("profile_photo_url"),
             }
             for i in top_indices
         ]

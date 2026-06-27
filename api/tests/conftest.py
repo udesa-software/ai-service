@@ -9,6 +9,8 @@ if sys.version_info < (3, 10):
         "source .venv/bin/activate; pip install -r requirements.txt"
     )
 
+RUN_REAL_EMBEDDINGS_BENCHMARK = "RUN_REAL_EMBEDDINGS_BENCHMARK"
+
 # Set dummy env vars before any module is imported.
 # The service modules instantiate Settings() at import time,
 # so these must exist before collection starts.

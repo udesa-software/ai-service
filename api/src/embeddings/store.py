@@ -110,7 +110,7 @@ class EmbeddingStore:
                 with conn.cursor() as cur:
                     cur.execute(
                         """
-                        SELECT u.id::text, u.username, p.biography
+                        SELECT u.id::text, u.username, u.profile_photo_url, p.biography
                         FROM user_embeddings ue
                         JOIN users u ON u.id = ue.user_id
                         JOIN preferences p ON p.user_id = u.id
@@ -126,7 +126,7 @@ class EmbeddingStore:
                         (list(exclude_ids), _serialize(vector), limit),
                     )
                     return [
-                        {"id": row[0], "username": row[1], "biography": row[2]}
+                        {"id": row[0], "username": row[1], "profile_photo_url": row[2], "biography": row[3]}
                         for row in cur.fetchall()
                     ]
         except Exception as e:
